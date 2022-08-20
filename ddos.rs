@@ -11,9 +11,14 @@ fn main() {
     loop {
         time+=1;
         thread::spawn(move|| {
-            TcpStream::connect(env::args().nth(1).unwrap()).unwrap();
-            print!("\r{}", time);
-            io::stdout().flush().ok().expect("Could not flush stdout");
+            match TcpStream::connect(env::args().nth(1).unwrap()) {
+                Ok(mut tcp) => {
+                    tcp.write(&[0]).unwrap();
+                    print!("\r{}", time);
+                    io::stdout().flush().ok().expect("Could not flush stdout");
+                },
+                _ => {}
+            };
         });
         thread::sleep(sleep);
     }
